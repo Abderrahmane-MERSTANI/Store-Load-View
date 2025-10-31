@@ -1,0 +1,36 @@
+import random
+
+def jeu_pierre_papier_ciseaux():
+    print("Bienvenue dans le jeu : Pierre ✊ - Papier 📄 - Ciseaux ✂️")
+    choix_possibles = ["pierre", "papier", "ciseaux"]
+
+    while True:
+        joueur = input("Fais ton choix (pierre, papier, ciseaux) ou 'quit' pour arrêter : ").lower()
+
+        if joueur == "quit":
+            print("Merci d’avoir joué ! 👋")
+            break
+
+        if joueur not in choix_possibles:
+            print("Choix invalide ❌, réessaie.")
+            continue
+
+        ordinateur = random.choice(choix_possibles)
+        print(f"L'ordinateur a choisi : {ordinateur}")
+
+        if joueur == ordinateur:
+            print("Égalité 🤝")
+        elif (
+            (joueur == "pierre" and ordinateur == "ciseaux")
+            or (joueur == "papier" and ordinateur == "pierre")
+            or (joueur == "ciseaux" and ordinateur == "papier")
+        ):
+            print("Tu gagnes 🎉")
+        else:
+            print("Tu perds 😢")
+
+        print("-" * 30)
+
+# Lancer le jeu
+if __name__ == "__main__":
+    jeu_pierre_papier_ciseaux()
