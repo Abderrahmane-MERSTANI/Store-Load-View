@@ -1,0 +1,69 @@
+from cryptography.fernet import Fernet
+import os
+import json
+
+# --- Générer une clé de chiffrement une seule fois ---
+def generate_key():
+    if not os.path.exists("key.key"):
+        key = Fernet.generate_key()
+        with open("key.key", "wb") as key_file:
+            key_file.write(key)
+
+# --- Charger la clé de chiffrement ---
+def load_key():
+    return open("key.key", "rb").read()
+
+# --- Sauvegarder les mots de passe chiffrés ---
+def save_passwords(passwords):
+    f = Fernet(load_key())
+    encrypted = f.encrypt(json.dumps(passwords).encode())
+    with open("passwords.bin", "wb") as file:
+        file.write(encrypted)
+
+# --- Charger les mots de passe déchiffrés ---
+def load_passwords():
+    if not os.path.exists("passwords.bin"):
+        return {}
+    f = Fernet(load_key())
+    with open("passwords.bin", "rb") as file:
+        data = file.read()
+    decrypted = f.decrypt(data).decode()
+    return json.loads(decrypted)
+
+# --- Menu principal ---
+def main():
+    generate_key()
+    passwords = load_passwords()
+
+    while True:
+        print("\n=== Gestionnaire de mots de passe ===")
+        print("1️⃣  Ajouter un mot de passe")
+        print("2️⃣  Voir un mot de passe")
+        print("3️⃣  Voir tous les sites enregistrés")
+        print("4️⃣  Quitter")
+
+        choix = input("Choisis une option : ")
+
+        if choix == "1":
+            site = input("Nom du site : ").lower()
+            mdp = input("Mot de passe : ")
+            passwords[site] = mdp
+            save_passwords(passwords)
+            print("✅ Mot de passe enregistré avec succès.")
+
+        elif choix == "2":
+            site = input("Nom du site : ").lower()
+            print(f"🔐 Mot de passe pour {site} : {passwords.get(site, 'Non trouvé')}")
+
+        elif choix == "3":
+            print("📂 Sites enregistrés : ", ", ".join(passwords.keys()) or "Aucun")
+
+        elif choix == "4":
+            print("👋 Au revoir !")
+            break
+
+        else:
+            print("❌ Option invalide.")
+
+if __name__ == "__main__":
+    main()
